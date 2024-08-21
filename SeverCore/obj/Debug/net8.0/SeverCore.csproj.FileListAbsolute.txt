@@ -1,0 +1,14 @@
+D:\Sever\SeverCore\bin\Debug\net8.0\SeverCore.exe
+D:\Sever\SeverCore\bin\Debug\net8.0\SeverCore.deps.json
+D:\Sever\SeverCore\bin\Debug\net8.0\SeverCore.runtimeconfig.json
+D:\Sever\SeverCore\bin\Debug\net8.0\SeverCore.dll
+D:\Sever\SeverCore\bin\Debug\net8.0\SeverCore.pdb
+D:\Sever\SeverCore\obj\Debug\net8.0\SeverCore.GeneratedMSBuildEditorConfig.editorconfig
+D:\Sever\SeverCore\obj\Debug\net8.0\SeverCore.AssemblyInfoInputs.cache
+D:\Sever\SeverCore\obj\Debug\net8.0\SeverCore.AssemblyInfo.cs
+D:\Sever\SeverCore\obj\Debug\net8.0\SeverCore.csproj.CoreCompileInputs.cache
+D:\Sever\SeverCore\obj\Debug\net8.0\SeverCore.dll
+D:\Sever\SeverCore\obj\Debug\net8.0\refint\SeverCore.dll
+D:\Sever\SeverCore\obj\Debug\net8.0\SeverCore.pdb
+D:\Sever\SeverCore\obj\Debug\net8.0\SeverCore.genruntimeconfig.cache
+D:\Sever\SeverCore\obj\Debug\net8.0\ref\SeverCore.dll
