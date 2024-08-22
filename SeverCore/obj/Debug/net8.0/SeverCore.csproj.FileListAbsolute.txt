@@ -12,3 +12,4 @@ D:\Sever\SeverCore\obj\Debug\net8.0\refint\SeverCore.dll
 D:\Sever\SeverCore\obj\Debug\net8.0\SeverCore.pdb
 D:\Sever\SeverCore\obj\Debug\net8.0\SeverCore.genruntimeconfig.cache
 D:\Sever\SeverCore\obj\Debug\net8.0\ref\SeverCore.dll
+D:\Sever\SeverCore\obj\Debug\net8.0\SeverCore.sourcelink.json
