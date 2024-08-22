@@ -5,42 +5,34 @@ namespace SeverCore
 {
     class Progaram
     {
-        static void MainThread(object state)
+        volatile static bool _stop = false; //volatile 잘 안씀...=
+
+        static void ThreadMain()
         {
-            for(int i = 0; i < 5; i++)
-                Console.WriteLine("Hello Thread!");
+            Console.WriteLine("쓰레드 시작");
+
+            while (_stop == false)
+            {
+                //누군가 stop신호를 해주기를 기다린다
+            }
+
+            Console.WriteLine("쓰레드 종료");
         }
 
-
         static void Main(string[] args)
-        {          
-            ThreadPool.SetMinThreads(1, 1);
-            ThreadPool.SetMaxThreads(5, 5);
+        {
+            Task t = new Task(ThreadMain);
+            t.Start();
 
-            for (int i = 0; i < 5; i++)
-            {
-                Task t = new Task(() => { while (true) { }; }, TaskCreationOptions.LongRunning);
-                t.Start();
-            }
-                
+            Thread.Sleep(1000);
 
-            //for (int i = 0; i < 5; i++)
-            //    ThreadPool.QueueUserWorkItem((obj) => { while (true) { }; });
+            _stop = true;
 
-            ThreadPool.QueueUserWorkItem(MainThread);
 
-            //Thread t = new Thread(MainThread);
-            //t.Name = "Test Thread";
-            //t.IsBackground = true; //백그라운드실행(main이 종료되면 같이 종료)
-            //t.Start();
-            //Console.WriteLine("Waiting for Thread!");
-
-            //t.Join(); //작업이 끝나는 것을 기다림
-            //Console.WriteLine("Hello World!");
-            while (true)
-            {
-
-            }
+            Console.WriteLine("Stop 호출");
+            Console.WriteLine("종료 대기중");
+            t.Wait();//Join
+            Console.WriteLine("종료 성공");
         }
     }
 }
