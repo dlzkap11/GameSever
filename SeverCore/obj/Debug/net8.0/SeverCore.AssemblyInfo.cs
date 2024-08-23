@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SeverCore")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+55a5f897fd0ebf1ea56b4073310d31ca1fbd7e67")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7226c7b27609a8489f1624273dbbbeb7f15ad3af")]
 [assembly: System.Reflection.AssemblyProductAttribute("SeverCore")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SeverCore")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
