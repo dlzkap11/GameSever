@@ -18,18 +18,48 @@ namespace SeverCore
     class Progaram
     {
         static int number = 0;
+        static object _obj = new object();
 
         static void Thread_1()
         {
-            
-            for(int i = 0; i < 100000000; i++)
-                Interlocked.Increment(ref number);
+
+            for (int i = 0; i < 10000000; i++)
+            {
+                //상호배제 Mutual Exclusive
+                //CriticalSection(window), std:mutex(C++)
+                //데드락 DeadLock  Enter 이후 Exit이 실행되지않는 경우
+
+                lock (_obj) //실제구조는 Monitor와 같음
+                {
+                    number++;
+                }
+                /*
+                try
+                {
+                    Monitor.Enter(_obj); //문을 잠그는 행위
+                    number++;
+                    return;
+                }
+                finally
+                {
+                    Monitor.Exit(_obj); // 잠금 해제
+                }
+                */
+            }
+                           
         }
+        
 
         static void Thread_2()
         {
-            for (int i = 0; i < 100000000; i++)
-                Interlocked.Decrement(ref number);
+            for (int i = 0; i < 10000000; i++)
+            {
+                lock (_obj) //실제구조는 Monitor와 같음
+                {
+                    number--;
+                }
+            }
+                
         }
 
         static void Main(string[] args)
