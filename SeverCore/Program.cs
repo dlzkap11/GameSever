@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Design.Serialization;
+using System.Diagnostics;
 using System.Threading;
 
 namespace SeverCore
@@ -41,15 +42,52 @@ namespace SeverCore
 
     class Program
     {
+        //락 구현
+        // 1. 한무대기
+        // 2. 양보
+        // 3. 갑질..(event)
+
+        //상호배제
+
         static int _num = 0;
-        static Lock _lock = new Lock();
-        static Mutex _lock_2 = new Mutex(); //커널동기화객체..
+        static Lock _lock = new Lock();    
+        static SpinLock _lock_3 = new SpinLock(); // 한무대기
+        static object _lock_4 = new object(); //Monitor
+        // RWLock ReaderWirteLock
+        static ReaderWriterLockSlim _lock_5 = new ReaderWriterLockSlim();
+        //직접 만들기
 
+
+        static Mutex _lock_2 = new Mutex(); //커널동기화객체.. 무겁기도하고, 굳이?라서 게임서버 만들 때는 잘 안쓴다고 함
+        
         // bool AutoResetEvent 
-
-
         // int ThreadId  Mutex -> 좀 더 비용이 많이 듬
 
+
+        //[][][][]
+        class Reward
+        {
+
+        }
+
+        // 잘 안바뀜.. 그래서 굳이 락을 해야할까? 하더라도 특정 순간에만! -> RWLock 사용
+        static Reward GetRewardById(int id)
+        {
+            _lock_5.EnterReadLock();
+
+
+            _lock_5.ExitReadLock();
+
+            return null;
+        }
+
+        static void AddReward(Reward reward)
+        {
+            _lock_5.EnterWriteLock();
+
+
+            _lock_5.ExitWriteLock();
+        }
 
         static void Thread_1()
         {
