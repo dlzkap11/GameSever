@@ -58,9 +58,9 @@ namespace SeverCore
 
         static void Thread_1()
         {
-            _lock.Acquire();
+            _lock.Acquire(); //들어가기전 확인 및 들어간 후 락을 잠금
             _num++;
-            _lock.Release();
+            _lock.Release(); //끝나고 락을 풀어줌
         }
 
         static void Thread_2()
