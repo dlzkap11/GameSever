@@ -14,112 +14,76 @@ namespace SeverCore
 
     // atomic = 원자성
     // 
-
-
-    class SessionManger
+    class SpinLock
     {
-        static object _lock = new object();
+        volatile int _locked = 0; 
 
-        public static void TestSession()
+        public void Acquire()
         {
-            lock (_lock)
+            while (true)
             {
-               
-            }
-        }
-        public static void Test()
-        {
-            lock (_lock)
-            {
-                UserManger.TestUser();
-            }
-        }
+                //int original = Interlocked.Exchange(ref _locked, 1);
+                //if (original == 0)
+                //    break;
+                //{
+                //    int original = _locked;
+                //    _locked = 1;
+                //    if (original == 0)
+                //        break;
+                //}
 
-    }
-    class UserManger
-    {
-        static object _lock = new object();
-
-        public static void Test()
-        {
-            //Monitor.TryEnter(); //실패했을시 일정시간 이후 나가기
-            lock (_lock)
-            {
-                SessionManger.TestSession();
+                // CAS Compare-And-Swap
+                int expected = 0; //예상하는 값
+                int desired = 1;  //원하는 값
+                if(Interlocked.CompareExchange(ref _locked, desired, expected) == expected)
+                    break;
+                //{
+                //    if(_locked == 0)
+                //        _locked = 1;
+                //}
             }
+            
         }
 
-        public static void TestUser()
+        public void Release()
         {
-            lock(_lock)
-            {
-
-            }
+            _locked = 0; 
         }
     }
 
-    class Progaram
+    class Program
     {
-        static int number = 0;
-        static object _obj = new object();
+        static int _num = 0;
+        static SpinLock _lock = new SpinLock();
 
         static void Thread_1()
         {
-
-            for (int i = 0; i < 100; i++)
-            {
-                //상호배제 Mutual Exclusive
-                //CriticalSection(window), std:mutex(C++)
-                //데드락 DeadLock 
-
-                //lock (_obj) //실제구조는 Monitor와 같음
-                //{
-                //    number++;
-                //}
-                SessionManger.Test();
-                /*
-                try
-                {
-                    Monitor.Enter(_obj); //문을 잠그는 행위
-                    number++;
-                    return;
-                }
-                finally
-                {
-                    Monitor.Exit(_obj); // 잠금 해제
-                }
-                */
-            }
-                           
+            _lock.Acquire();
+            _num++;
+            _lock.Release();
         }
-        
 
         static void Thread_2()
         {
-            for (int i = 0; i < 100; i++)
-            {
-                //lock (_obj) //실제구조는 Monitor와 같음
-                //{
-                //    number--;
-                //}
-                UserManger.Test();
-            }
-                
+            _lock.Acquire();
+            _num--;
+            _lock.Release();
         }
 
         static void Main(string[] args)
         {
             Task t1 = new Task(Thread_1);
             Task t2 = new Task(Thread_2);
+
             t1.Start();
-
-            Thread.Sleep(100);
-
             t2.Start();
 
             Task.WaitAll(t1, t2);
 
-            Console.WriteLine(number);
+            Console.WriteLine(_num);
+
         }
     }
+   
+    
 }
