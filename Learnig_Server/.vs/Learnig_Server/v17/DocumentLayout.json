@@ -6,11 +6,7 @@
       "AbsoluteMoniker": "D:0:0:{CAB9CB74-2629-4898-9111-4CC61A8CF195}|..\\SeverCore\\SeverCore.csproj|d:\\sever\\severcore\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{84F750DE-70D1-47AD-8D7B-11582638B833}|..\\DummyClient\\DummyClient.csproj|d:\\sever\\dummyclient\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{805ED577-B377-42B7-A8D8-770142FD2285}|Learnig_Server.csproj|d:\\sever\\learnig_server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{805ED577-B377-42B7-A8D8-770142FD2285}|Learnig_Server.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CAB9CB74-2629-4898-9111-4CC61A8CF195}|..\\SeverCore\\SeverCore.csproj|d:\\sever\\severcore\\lock.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -29,14 +25,15 @@
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\Sever\\DummyClient\\Program.cs",
-              "RelativeDocumentMoniker": "..\\DummyClient\\Program.cs",
-              "ToolTip": "D:\\Sever\\DummyClient\\Program.cs",
-              "RelativeToolTip": "..\\DummyClient\\Program.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAAAAAA",
+              "Title": "Lock.cs",
+              "DocumentMoniker": "D:\\Sever\\SeverCore\\Lock.cs",
+              "RelativeDocumentMoniker": "..\\SeverCore\\Lock.cs",
+              "ToolTip": "D:\\Sever\\SeverCore\\Lock.cs",
+              "RelativeToolTip": "..\\SeverCore\\Lock.cs",
+              "ViewState": "AQIAABgAAAAAAAAAAAAAAFAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-21T09:54:02.162Z"
+              "WhenOpened": "2024-08-27T08:45:48.634Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -46,22 +43,10 @@
               "RelativeDocumentMoniker": "..\\SeverCore\\Program.cs",
               "ToolTip": "D:\\Sever\\SeverCore\\Program.cs",
               "RelativeToolTip": "..\\SeverCore\\Program.cs",
-              "ViewState": "AQIAACcAAAAAAAAAAAAAADgAAAAiAAAA",
+              "ViewState": "AQIAABgAAAAAAAAAAAAWwCMAAAAoAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-08-21T09:53:38.435Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\Sever\\Learnig_Server\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "D:\\Sever\\Learnig_Server\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-21T09:52:53.611Z"
             }
           ]
         }
