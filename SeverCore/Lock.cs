@@ -22,17 +22,17 @@ namespace SeverCore
         public void WriteLock()
         {
 
-            //동일 쓰레드가 WriteLock을 이미 획득하고 있는지 확인
+            //동일 쓰레드가 WriteLock을 이미 획득하고 있는지 확인있으면 return   
             int lockThreadId = (_flag & WRITE_MASK) >> 16;
             if(Thread.CurrentThread.ManagedThreadId == lockThreadId)
             {
                 _writeCount++;
                 return;
             }
+            
 
             //아무도 WriteLock or ReadLock을 획득하고 있지 않을 때, 경합해서 소유권을 얻는다
             int desired = (Thread.CurrentThread.ManagedThreadId << 16) & WRITE_MASK;
-
             while (true)
             {
                 for(int i = 0; i < MAX_SPIN_COUNT; i++)

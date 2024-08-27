@@ -22,12 +22,33 @@ namespace SeverCore
         static int count = 0; 
         static Lock _lock = new Lock();
 
+        //TLS (Thread Local Storage) 영역전개 굳이 락을 걸지않아도 각자의 영역이 있음 쓰레드 전역변수를 사용할 때 많이 사용가능
+        static ThreadLocal<string> ThreadName = new ThreadLocal<string>(() => { return $"My Name is {Thread.CurrentThread.ManagedThreadId}"; });
+
+        static void WhoAmI()
+        {
+            bool repeat = ThreadName.IsValueCreated;
+            if(repeat)
+                Console.WriteLine(ThreadName.Value + "(repeat)");
+            else
+                Console.WriteLine(ThreadName.Value);
+        }
+
 
         static void Main(string[] args)
         {
+
+            ThreadPool.SetMinThreads(1, 1);
+            ThreadPool.SetMaxThreads(3, 3);
+            Parallel.Invoke(WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI);
+
+            ThreadName.Dispose();
+
+
+            /*
             Task t1 = new Task(delegate ()
             {
-                for (int i = 0; i < 10000; i++)
+                for (int i = 0; i < 100000; i++)
                 {
                     _lock.WriteLock();
                     _lock.WriteLock();
@@ -39,7 +60,7 @@ namespace SeverCore
 
             Task t2 = new Task(delegate ()
             {
-                for (int i = 0; i < 10000; i++)
+                for (int i = 0; i < 100000; i++)
                 {
                     _lock.WriteLock();
                     count--;
@@ -53,6 +74,7 @@ namespace SeverCore
             Task.WaitAll(t1, t2);
 
             Console.WriteLine(count);
+            */
         }
     }
    
