@@ -17,36 +17,42 @@ namespace DummyClient
             IPAddress ipAddr = ipHost.AddressList[0];
             IPEndPoint endPoint = new IPEndPoint(ipAddr, 7777);
 
-            // 휴대폰 설정
-            Socket socktet = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-            try
+            while (true)
             {
-                //문지기한테 입장 문의
-                socktet.Connect(endPoint);
-                Console.WriteLine($"Connected To {socktet.RemoteEndPoint.ToString()}");
+                // 휴대폰 설정
+                Socket socktet = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-                // 보낸다
-                byte[] sendBuff = Encoding.UTF8.GetBytes("Hello World!");
-                int sendBytes = socktet.Send(sendBuff);
+                try
+                {
+                    //문지기한테 입장 문의
+                    socktet.Connect(endPoint);
+                    Console.WriteLine($"Connected To {socktet.RemoteEndPoint.ToString()}");
 
-                // 받는다
+                    // 보낸다
+                    byte[] sendBuff = Encoding.UTF8.GetBytes("Hello World!");
+                    int sendBytes = socktet.Send(sendBuff);
 
-                byte[] recvBuff = new byte[1024];
-                int recvBytes = socktet.Receive(recvBuff);
-                string recvData = Encoding.UTF8.GetString(recvBuff, 0, recvBytes);
-                Console.WriteLine($"[From Server]{recvData}");
+                    // 받는다
 
-                // 나간다
-                socktet.Shutdown(SocketShutdown.Both);
-                socktet.Close();
+                    byte[] recvBuff = new byte[1024];
+                    int recvBytes = socktet.Receive(recvBuff);
+                    string recvData = Encoding.UTF8.GetString(recvBuff, 0, recvBytes);
+                    Console.WriteLine($"[From Server]{recvData}");
+
+                    // 나간다
+                    socktet.Shutdown(SocketShutdown.Both);
+                    socktet.Close();
+                }
+
+
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
             }
-
-
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
+            
+            Thread.Sleep(1000);
 
         }
     }
