@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Design.Serialization;
 using System.Diagnostics;
+using System.Net.Sockets;
 using System.Threading;
 
 namespace SeverCore
@@ -21,6 +22,7 @@ namespace SeverCore
 
         static int count = 0; 
         static Lock _lock = new Lock();
+        static Socket_1 _socket = new Socket_1();
 
         //TLS (Thread Local Storage) 영역전개 굳이 락을 걸지않아도 각자의 영역이 있음 쓰레드 전역변수를 사용할 때 많이 사용가능
         static ThreadLocal<string> ThreadName = new ThreadLocal<string>(() => { return $"My Name is {Thread.CurrentThread.ManagedThreadId}"; });
@@ -38,11 +40,14 @@ namespace SeverCore
         static void Main(string[] args)
         {
 
-            ThreadPool.SetMinThreads(1, 1);
-            ThreadPool.SetMaxThreads(3, 3);
-            Parallel.Invoke(WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI);
+            //ThreadPool.SetMinThreads(1, 1);
+            //ThreadPool.SetMaxThreads(3, 3);
+            //Parallel.Invoke(WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI);
 
-            ThreadName.Dispose();
+            _socket.Listen();
+
+
+            //ThreadName.Dispose();
 
 
             /*
