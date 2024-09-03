@@ -13,30 +13,6 @@ namespace SeverCore
     {
         static Listener _listener = new Listener();
 
-        static void OnAcceptHandler(Socket clientSocket)
-        {
-            try
-            {
-                
-                
-                Session session = new Session();
-                session.Start(clientSocket);
-
-                byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Sever!");
-                session.Send(sendBuff);
-
-                Thread.Sleep(1000);
-
-                session.Disconnect();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-
-
-        }
-
         public void Listen()
         {
             //DNS (Domain Name System)
@@ -48,7 +24,7 @@ namespace SeverCore
             IPEndPoint endPoint = new IPEndPoint(ipAddr, 7777);
 
 
-            _listener.Init(endPoint, OnAcceptHandler); //소켓생성
+            _listener.Init(endPoint, () => { return new GameSession(); }); //소켓생성
             Console.WriteLine("Listening...");
 
 
