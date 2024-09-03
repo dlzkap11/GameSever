@@ -6,9 +6,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SeverCore
+namespace ServerCore
 {
-    internal class Listener
+    public class Listener
     {
         Socket _listenSocket;
         Func<Session> _sessionFactory;
