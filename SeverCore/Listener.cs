@@ -27,11 +27,13 @@ namespace SeverCore
             // backlog : 최대 대기수
             _listenSocket.Listen(1000);
 
-            SocketAsyncEventArgs args = new SocketAsyncEventArgs();
-            args.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted);
-            RegisterAccept(args);
-
-
+            for(int i = 0; i < 10; i++) //문을 여러개 생성
+            {
+                SocketAsyncEventArgs args = new SocketAsyncEventArgs();
+                args.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted);
+                RegisterAccept(args);
+            }
+            
         }
 
         void RegisterAccept(SocketAsyncEventArgs args)

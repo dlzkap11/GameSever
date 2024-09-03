@@ -30,8 +30,12 @@ namespace DummyClient
                     Console.WriteLine($"Connected To {socktet.RemoteEndPoint.ToString()}");
 
                     // 보낸다
-                    byte[] sendBuff = Encoding.UTF8.GetBytes("Hello World!");
-                    int sendBytes = socktet.Send(sendBuff);
+                    for(int i = 0; i < 5; i++)
+                    {
+                        byte[] sendBuff = Encoding.UTF8.GetBytes($"Hello World! {i}");
+                        int sendBytes = socktet.Send(sendBuff);
+                    }
+                    
 
                     // 받는다
 

@@ -17,22 +17,17 @@ namespace SeverCore
         {
             try
             {
-                // 손님을 입장시킨다
-                //clientSocket = _listener.Accept();
-                // 받는다
-                byte[] recvBuff = new byte[1024];
-                int recvBytes = clientSocket.Receive(recvBuff);
-                string recvData = Encoding.UTF8.GetString(recvBuff, 0, recvBytes);
-                Console.WriteLine($"[From Client] {recvData}");
+                
+                
+                Session session = new Session();
+                session.Start(clientSocket);
 
-                // 보낸다
                 byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Sever!");
-                clientSocket.Send(sendBuff);
+                session.Send(sendBuff);
 
-                // 닫는다
-                clientSocket.Shutdown(SocketShutdown.Both); //예고
-                clientSocket.Close();
+                Thread.Sleep(1000);
 
+                session.Disconnect();
             }
             catch (Exception e)
             {
@@ -56,9 +51,9 @@ namespace SeverCore
             _listener.Init(endPoint, OnAcceptHandler); //소켓생성
             Console.WriteLine("Listening...");
 
-            
-            while (true) { }
- 
+
+            while (true) {; }
+
         }
     }
 }
