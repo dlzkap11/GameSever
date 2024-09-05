@@ -7,9 +7,19 @@ using System.Text;
 using System.Threading;
 using static System.Collections.Specialized.BitVector32;
 using ServerCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Learning_Server
 {
+    class Knight
+    {
+        public int hp;
+        public int attack;
+        public string name;
+        public List<int> skills = new List<int>();
+    }
+
+
 
     class GameSession : Session
     {
@@ -17,7 +27,18 @@ namespace Learning_Server
         {
             Console.WriteLine($"Onconnected : {endPoint}");
 
-            byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Sever!");
+            Knight knight = new Knight() { hp = 100, attack = 10 };
+
+            // [100]  []  []  []  [10]  []  []  []
+            ArraySegment<byte> openSegement = SendBufferHelper.Open(4096);
+            byte[] buffer = BitConverter.GetBytes(knight.hp);
+            byte[] buffer2 = BitConverter.GetBytes(knight.attack);
+            Array.Copy(buffer, 0, openSegement.Array, openSegement.Offset, buffer.Length);
+            Array.Copy(buffer2, 0, openSegement.Array, openSegement.Offset + buffer.Length, buffer2.Length);
+            ArraySegment<byte> sendBuff = SendBufferHelper.Close(buffer.Length + buffer2.Length);
+
+
+
             Send(sendBuff);
             Thread.Sleep(1000);
             Disconnect();
