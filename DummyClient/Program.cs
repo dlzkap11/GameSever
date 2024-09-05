@@ -9,40 +9,52 @@ using System.Threading;
 
 namespace DummyClient
 {
-    class Program
+    class Packet
     {
-        class GameSession : Session
+        public ushort size;
+        public ushort packetId;
+    }
+
+    class GameSession : Session
+    {
+        public override void OnConnected(EndPoint endPoint)
         {
-            public override void OnConnected(EndPoint endPoint)
-            {
-                Console.WriteLine($"Onconnected : {endPoint}");
+            Console.WriteLine($"Onconnected : {endPoint}");
+            Packet packet = new Packet() { size = 4, packetId = 7 };
 
-                // 보낸다
-                for (int i = 0; i < 5; i++)
-                {
-                    byte[] sendBuff = Encoding.UTF8.GetBytes($"Hello World! {i}");
-                    Send(sendBuff);
-                }
-            }
-
-            public override void OnDisconnected(EndPoint endPoint)
+            // 보낸다
+            for (int i = 0; i < 5; i++)
             {
-                Console.WriteLine($"OnDisconnected : {endPoint}");
-            }
+                ArraySegment<byte> openSegement = SendBufferHelper.Open(4096);
+                byte[] buffer = BitConverter.GetBytes(packet.size);
+                byte[] buffer2 = BitConverter.GetBytes(packet.packetId);
+                Array.Copy(buffer, 0, openSegement.Array, openSegement.Offset, buffer.Length);
+                Array.Copy(buffer2, 0, openSegement.Array, openSegement.Offset + buffer.Length, buffer2.Length);
+                ArraySegment<byte> sendBuff = SendBufferHelper.Close(packet.size);
 
-            public override int OnRecv(ArraySegment<byte> buffer)
-            {
-                string recvData = Encoding.UTF8.GetString(buffer.Array, buffer.Offset, buffer.Count);
-                Console.WriteLine($"[From Server] {recvData}");
-                return buffer.Count;
-            }
-
-            public override void OnSend(int numOfBytes)
-            {
-                Console.WriteLine($"Transferred bytes: {numOfBytes}");
+                Send(sendBuff);
             }
         }
 
+        public override void OnDisconnected(EndPoint endPoint)
+        {
+            Console.WriteLine($"OnDisconnected : {endPoint}");
+        }
+
+        public override int OnRecv(ArraySegment<byte> buffer)
+        {
+            string recvData = Encoding.UTF8.GetString(buffer.Array, buffer.Offset, buffer.Count);
+            Console.WriteLine($"[From Server] {recvData}");
+            return buffer.Count;
+        }
+
+        public override void OnSend(int numOfBytes)
+        {
+            Console.WriteLine($"Transferred bytes: {numOfBytes}");
+        }
+    }
+    class Program
+    {
         static void Main(string[] args)
         {
             string host = Dns.GetHostName();
