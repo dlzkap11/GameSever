@@ -8,68 +8,10 @@ using System.Threading;
 using static System.Collections.Specialized.BitVector32;
 using ServerCore;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Learnig_Server;
 
 namespace Learning_Server
-{
-    class Packet
-    {
-        public ushort size;
-        public ushort packetId;
-    }
-
-    class GameSession : PacketSession
-    {
-        public override void OnConnected(EndPoint endPoint)
-        {
-            Console.WriteLine($"Onconnected : {endPoint}");
-
-            //Packet packet = new Packet() { size = 100, packetId = 10 };
-
-            // [100]  []  []  []  [10]  []  []  []
-            //ArraySegment<byte> openSegement = SendBufferHelper.Open(4096);
-            //byte[] buffer = BitConverter.GetBytes(packet.size);
-            //byte[] buffer2 = BitConverter.GetBytes(packet.packetId);
-            //Array.Copy(buffer, 0, openSegement.Array, openSegement.Offset, buffer.Length);
-            //Array.Copy(buffer2, 0, openSegement.Array, openSegement.Offset + buffer.Length, buffer2.Length);
-            //ArraySegment<byte> sendBuff = SendBufferHelper.Close(buffer.Length + buffer2.Length);
-
-
-
-            //Send(sendBuff);
-            Thread.Sleep(5000);
-            Disconnect();
-        }
-
-        public override void OnRecvPacket(ArraySegment<byte> buffer)
-        {
-            ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
-            ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + 2);
-            Console.WriteLine( $"RecvPacket Id : {id}, Size : {size}");
-        }
-
-        public override void OnDisconnected(EndPoint endPoint)
-        {
-            Console.WriteLine($"OnDisconnected : {endPoint}");
-        }
-
-        // 이동패킷 ((3,2)좌표로 이동하고 싶다!)
-        // 15 3 2
-
-        /*
-        public override int OnRecv(ArraySegment<byte> buffer)
-        {
-            string recvData = Encoding.UTF8.GetString(buffer.Array, buffer.Offset, buffer.Count);
-            Console.WriteLine($"[From Client] {recvData}");
-            return buffer.Count;
-        }
-        */
-        
-
-        public override void OnSend(int numOfBytes)
-        {
-            Console.WriteLine($"Transferred bytes: {numOfBytes}");
-        }
-    }
+{   
     class Program
     {
 
@@ -111,7 +53,7 @@ namespace Learning_Server
             IPEndPoint endPoint = new IPEndPoint(ipAddr, 7777);
 
 
-            _listener.Init(endPoint, () => { return new GameSession(); }); //소켓생성
+            _listener.Init(endPoint, () => { return new ClientSession(); }); //소켓생성
             Console.WriteLine("Listening...");
 
 
