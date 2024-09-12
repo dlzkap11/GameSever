@@ -9,19 +9,7 @@ using System.Xml.Serialization;
 
 namespace DummyClient
 {
-    public abstract class Packet
-    {
-        public ushort size;
-        public ushort packetId;
-
-       
-        public abstract ArraySegment<byte> Write();
-        public abstract void Read(ArraySegment<byte> s);
-
-
-    }
-
-    class PlayerInfoReq : Packet
+    class PlayerInfoReq
     {
         public long playerId;
         public string name;
@@ -60,12 +48,7 @@ namespace DummyClient
         public List<SkillInfo> skills = new List<SkillInfo>();
 
 
-        public PlayerInfoReq()
-        {
-            this.packetId = (ushort)PacketID.PlayerInfoReq;
-        }
-
-        public override void Read(ArraySegment<byte> segement)
+        public  void Read(ArraySegment<byte> segement)
         {
             ushort count = 0;
 
@@ -99,7 +82,7 @@ namespace DummyClient
             
         }
 
-        public override ArraySegment<byte> Write()
+        public  ArraySegment<byte> Write()
         {
             ArraySegment<byte> segement = SendBufferHelper.Open(4096); //openSegement
             
@@ -111,7 +94,7 @@ namespace DummyClient
 
             //success &= BitConverter.TryWriteBytes(new Span<byte>(openSegement.Array, openSegement.Offset, openSegement.Count), packet.size);
             count += sizeof(ushort);
-            success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.packetId);
+            success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), (ushort)PacketID.PlayerInfoReq);
             count += sizeof(ushort);
             success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.playerId);
             count += sizeof(long);
