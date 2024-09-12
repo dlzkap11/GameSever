@@ -24,41 +24,76 @@ namespace DummyClient
     class PlayerInfoReq : Packet
     {
         public long playerId;
+        public string name;
+
+        public List<int> skills = new List<int>();
+
 
         public PlayerInfoReq()
         {
             this.packetId = (ushort)PacketID.PlayerInfoReq;
         }
 
-        public override void Read(ArraySegment<byte> s)
+        public override void Read(ArraySegment<byte> segement)
         {
             ushort count = 0;
 
-            //ushort size = BitConverter.ToUInt16(s.Array, s.Offset); ?
-            count += 2;
-            //ushort id = BitConverter.ToUInt16(s.Array, s.Offset + count);
-            count += 2;
-
-            this.playerId = BitConverter.ToUInt16(new ReadOnlySpan<byte>(s.Array, s.Offset + count, s.Count - count));
+            ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segement.Array, segement.Offset, segement.Count);
             
-            count += 8;
+            //ushort size = BitConverter.ToUInt16(s.Array, s.Offset); ?
+            count += sizeof(ushort);
+            //ushort id = BitConverter.ToUInt16(s.Array, s.Offset + count);
+            count += sizeof(ushort);
+
+            this.playerId = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
+            
+            count += sizeof(long);
+
+
+            ushort nameLen = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
+            count += sizeof(ushort);
+            this.name = Encoding.Unicode.GetString(s.Slice(count, nameLen));
             
         }
 
         public override ArraySegment<byte> Write()
         {
-            ArraySegment<byte> s = SendBufferHelper.Open(4096); //openSegement
+            ArraySegment<byte> segement = SendBufferHelper.Open(4096); //openSegement
             
             ushort count = 0;
             bool success = true;
 
+            Span<byte> s = new Span<byte>(segement.Array, segement.Offset, segement.Count);
+
+
             //success &= BitConverter.TryWriteBytes(new Span<byte>(openSegement.Array, openSegement.Offset, openSegement.Count), packet.size);
-            count += 2;
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), this.packetId);
-            count += 2;
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), this.playerId);
-            count += 8;
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset, s.Count), count);
+            count += sizeof(ushort);
+            success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.packetId);
+            count += sizeof(ushort);
+            success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.playerId);
+            count += sizeof(long);
+
+
+
+            // string
+            // string len [2]
+            // byte[]
+
+
+            //ushort nameLen = (ushort)Encoding.Unicode.GetByteCount(this.name);
+            //success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), nameLen);
+            //count += sizeof(ushort);
+            //Encoding.Unicode.GetBytes(this.name);
+            //Array.Copy(Encoding.Unicode.GetBytes(this.name), 0, segement.Array, count, nameLen);
+            //count += nameLen;
+
+            ushort nameLen = (ushort)Encoding.Unicode.GetBytes(this.name, 0, this.name.Length, segement.Array, segement.Offset + count + sizeof(ushort));
+            success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), nameLen);
+            count += sizeof(ushort);
+            count += nameLen;
+
+
+            success &= BitConverter.TryWriteBytes(s, count); //최종 카운트
 
             if (success == false)
                 return null;
@@ -89,7 +124,7 @@ namespace DummyClient
         public override void OnConnected(EndPoint endPoint)
         {
             Console.WriteLine($"Onconnected : {endPoint}");
-            PlayerInfoReq packet = new PlayerInfoReq() { playerId = 1001 };
+            PlayerInfoReq packet = new PlayerInfoReq() { playerId = 1001, name = "ABCD"};
 
             // 보낸다
             //for (int i = 0; i < 5; i++)

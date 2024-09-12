@@ -23,39 +23,67 @@ namespace Learnig_Server
     class PlayerInfoReq : Packet
     {
         public long playerId;
+        public string name;
 
         public PlayerInfoReq()
         {
             this.packetId = (ushort)PacketID.PlayerInfoReq;
         }
 
-        public override void Read(ArraySegment<byte> s)
+        public override void Read(ArraySegment<byte> segement)
         {
             ushort count = 0;
 
-            //ushort size = BitConverter.ToUInt16(s.Array, s.Offset); ?
-            count += 2;
-            //ushort id = BitConverter.ToUInt16(s.Array, s.Offset + count);
-            count += 2;
+            ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segement.Array, segement.Offset, segement.Count);
 
-            this.playerId = BitConverter.ToUInt16(new ReadOnlySpan<byte>(s.Array, s.Offset + count, s.Count - count));
-            count += 8;
+            //ushort size = BitConverter.ToUInt16(s.Array, s.Offset); ?
+            count += sizeof(ushort);
+            //ushort id = BitConverter.ToUInt16(s.Array, s.Offset + count);
+            count += sizeof(ushort);
+
+            this.playerId = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
+
+            count += sizeof(long);
+
+
+            ushort nameLen = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
+            count += sizeof(ushort);
+            this.name = Encoding.Unicode.GetString(s.Slice(count, nameLen));
 
         }
 
         public override ArraySegment<byte> Write()
         {
-            ArraySegment<byte> s = SendBufferHelper.Open(4096); //openSegement
-            bool success = true;
+            ArraySegment<byte> segement = SendBufferHelper.Open(4096); //openSegement
+
             ushort count = 0;
+            bool success = true;
+
+            Span<byte> s = new Span<byte>(segement.Array, segement.Offset, segement.Count);
+
 
             //success &= BitConverter.TryWriteBytes(new Span<byte>(openSegement.Array, openSegement.Offset, openSegement.Count), packet.size);
-            count += 2;
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), this.packetId);
-            count += 2;
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), this.playerId);
-            count += 8;
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset, s.Count), count);
+            count += sizeof(ushort);
+            success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.packetId);
+            count += sizeof(ushort);
+            success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.playerId);
+            count += sizeof(long);
+
+
+
+            // string
+            // string len [2]
+            // byte[]
+
+
+            ushort nameLen = (ushort)Encoding.Unicode.GetByteCount(this.name);
+            success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), nameLen);
+            count += sizeof(ushort);
+            Encoding.Unicode.GetBytes(this.name);
+            Array.Copy(Encoding.Unicode.GetBytes(this.name), 0, segement.Array, count, nameLen);
+            count += nameLen;
+
+            success &= BitConverter.TryWriteBytes(s, count); //최종 카운트
 
             if (success == false)
                 return null;
@@ -63,8 +91,6 @@ namespace Learnig_Server
             return SendBufferHelper.Close(count);
         }
     }
-
-
     public enum PacketID
     {
         PlayerInfoReq = 1,
@@ -96,7 +122,11 @@ namespace Learnig_Server
 
         public override void OnRecvPacket(ArraySegment<byte> buffer)
         {
-            
+            ushort count = 0;
+            ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
+            count += 2;
+            ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + count);
+            count += 2;
 
             switch ((PacketID)id)
             {
@@ -104,7 +134,7 @@ namespace Learnig_Server
                     {
                         PlayerInfoReq p = new PlayerInfoReq();
                         p.Read(buffer);
-                        Console.WriteLine($"Player InfoReq : {p.playerId}");
+                        Console.WriteLine($"Player InfoReq : {p.playerId} {p.name}");
                     }
                     break;
 
