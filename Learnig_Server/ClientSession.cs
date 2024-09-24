@@ -9,16 +9,52 @@ using System.Threading.Tasks;
 
 namespace Learnig_Server
 {
+    public enum PacketID
+    {
+        PlayerInfoReq = 1,
+        Test = 2,
+
+    }
+
     class PlayerInfoReq
     {
+        public byte testByte;
         public long playerId;
         public string name;
 
-        public struct Skill
+        public class Skill
         {
             public int id;
             public short level;
             public float duration;
+
+            public class Attribute
+            {
+                public int att;
+
+                public void Read(ReadOnlySpan<byte> s, ref ushort count)
+                {
+
+                    this.att = BitConverter.ToInt32(s.Slice(count, s.Length - count));
+                    count += sizeof(int);
+
+                }
+
+                public bool Write(Span<byte> s, ref ushort count)
+                {
+                    bool success = true;
+
+                    success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.att);
+                    count += sizeof(int);
+
+                    return success;
+                }
+
+
+            }
+
+            public List<Attribute> attributes = new List<Attribute>();
+
 
             public void Read(ReadOnlySpan<byte> s, ref ushort count)
             {
@@ -33,6 +69,18 @@ namespace Learnig_Server
 
                 this.duration = BitConverter.ToSingle(s.Slice(count, s.Length - count));
                 count += sizeof(float);
+
+
+                attributes.Clear();
+                ushort attributeLen = BitConverter.ToUInt16(s.Slice(count, s.Length - count)); //길이추출
+                count += sizeof(ushort);
+
+                for (int i = 0; i < attributeLen; i++)
+                {
+                    Attribute attribute = new Attribute();
+                    attribute.Read(s, ref count);
+                    attributes.Add(attribute);
+                }
 
             }
 
@@ -50,6 +98,12 @@ namespace Learnig_Server
 
                 success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.duration);
                 count += sizeof(float);
+
+
+                success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), (ushort)attributes.Count);
+                count += sizeof(ushort);
+                foreach (Attribute attribute in attributes)
+                    success &= attribute.Write(s, ref count);
 
                 return success;
             }
@@ -70,6 +124,9 @@ namespace Learnig_Server
             count += sizeof(ushort);
             //ushort id = BitConverter.ToUInt16(s.Array, s.Offset + count);
             count += sizeof(ushort);
+
+            this.testByte = (byte)segement.Array[segement.Offset + count];
+            count += sizeof(byte);
 
 
             this.playerId = BitConverter.ToInt64(s.Slice(count, s.Length - count));
@@ -108,6 +165,9 @@ namespace Learnig_Server
             success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), (ushort)PacketID.PlayerInfoReq);
             count += sizeof(ushort);
 
+            segement.Array[segement.Offset + count] = (byte)this.testByte;
+            count += sizeof(byte);
+
 
             success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.playerId);
             count += sizeof(long);
@@ -131,12 +191,6 @@ namespace Learnig_Server
 
             return SendBufferHelper.Close(count);
         }
-    }
-
-    public enum PacketID
-    {
-        PlayerInfoReq = 1,
-        PlayerInfoOk = 2,
     }
 
     class ClientSession : PacketSession

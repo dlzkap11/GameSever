@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,32 @@ namespace PacketGenerator
 {
     class PacketFormat
     {
+        // {0} 패킷 이름/번호 목록
+        // {1} 패킷 목록
+        public static string FileFormat =
+@"using ServerCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
+
+
+public enum PacketID
+{{
+    {0}
+}}
+
+{1}
+";
+        // {0} 패킷 이름
+        // {1} 패킷 번호
+        public static string packetEnumFormat =
+@"{0} = {1},";
+
+
         // {0} 패킷 이름
         // {1} 멤버 변수들
         // {2} 멤버 변수 Read
@@ -69,7 +96,7 @@ namespace PacketGenerator
         // {4} 멤버 변수 Write
         public static string memberListFormat =
 @"
-public struct {0}
+public class {0}
 {{
     {2}
 
@@ -103,6 +130,13 @@ this.{0} = BitConverter.{1}(s.Slice(count, s.Length - count));
 count += sizeof({2});
 ";
         // {0} 변수 이름
+        // {1} 변수 형식
+        public static string readByteFormat =
+@"this.{0} = ({1})segement.Array[segement.Offset + count];
+count += sizeof({1});
+";
+
+        // {0} 변수 이름
         public static string readStringFormat =
 @"
 ushort {0}Len = BitConverter.ToUInt16(s.Slice(count, s.Length - count)); //길이추출
@@ -134,7 +168,12 @@ for (int i = 0; i < {1}Len; i++)
 success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.{0});
 count += sizeof({1});
 ";
-
+        // {0} 변수 이름
+        // {1} 변수 형식
+        public static string writeByteFormat =
+@"segement.Array[segement.Offset + count] = (byte)this.{0};
+count += sizeof({1});
+";
 
         // {0} 변수 이름
         public static string writeStringFormat =
