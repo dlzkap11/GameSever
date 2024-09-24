@@ -30,6 +30,14 @@ public enum PacketID
 }}
 
 {1}
+
+interface IPacket
+{{
+	ushort Protocal {{ get; }}
+	void Read(ArraySegment<byte> segment);
+	ArraySegment<byte> Write();
+}}
+
 ";
         // {0} 패킷 이름
         // {1} 패킷 번호
@@ -42,15 +50,17 @@ public enum PacketID
         // {2} 멤버 변수 Read
         // {3} 멤버 변수 Write
         public static string packetFormat =
-@"class {0}
+@"class {0} : IPacket
 {{
     {1}
 
-    public void Read(ArraySegment<byte> segement)
+    public ushort Protocal {{ get {{ return (ushort)PacketID.{0}; }} }}
+
+    public void Read(ArraySegment<byte> segment)
     {{
         ushort count = 0;
 
-        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segement.Array, segement.Offset, segement.Count);
+        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
             
         //ushort size = BitConverter.ToUInt16(s.Array, s.Offset); ?
         count += sizeof(ushort);
@@ -62,13 +72,13 @@ public enum PacketID
 
     public ArraySegment<byte> Write()
     {{
-        ArraySegment<byte> segement = SendBufferHelper.Open(4096); //openSegement          
+        ArraySegment<byte> segment = SendBufferHelper.Open(4096); //opensegment          
         ushort count = 0;
         bool success = true;
 
-        Span<byte> s = new Span<byte>(segement.Array, segement.Offset, segement.Count);
+        Span<byte> s = new Span<byte>(segment.Array, segment.Offset, segment.Count);
 
-        //success &= BitConverter.TryWriteBytes(new Span<byte>(openSegement.Array, openSegement.Offset, openSegement.Count), packet.size);
+        //success &= BitConverter.TryWriteBytes(new Span<byte>(opensegment.Array, opensegment.Offset, opensegment.Count), packet.size);
         count += sizeof(ushort);
         success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), (ushort)PacketID.{0});
         count += sizeof(ushort);
@@ -132,7 +142,7 @@ count += sizeof({2});
         // {0} 변수 이름
         // {1} 변수 형식
         public static string readByteFormat =
-@"this.{0} = ({1})segement.Array[segement.Offset + count];
+@"this.{0} = ({1})segment.Array[segment.Offset + count];
 count += sizeof({1});
 ";
 
@@ -171,14 +181,14 @@ count += sizeof({1});
         // {0} 변수 이름
         // {1} 변수 형식
         public static string writeByteFormat =
-@"segement.Array[segement.Offset + count] = (byte)this.{0};
+@"segment.Array[segment.Offset + count] = (byte)this.{0};
 count += sizeof({1});
 ";
 
         // {0} 변수 이름
         public static string writeStringFormat =
 @"
-ushort {0}Len = (ushort)Encoding.Unicode.GetBytes(this.{0}, 0, this.{0}.Length, segement.Array, segement.Offset + count + sizeof(ushort));
+ushort {0}Len = (ushort)Encoding.Unicode.GetBytes(this.{0}, 0, this.{0}.Length, segment.Array, segment.Offset + count + sizeof(ushort));
 success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), {0}Len);
 count += sizeof(ushort);
 count += {0}Len;

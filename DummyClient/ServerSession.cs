@@ -36,11 +36,15 @@ namespace DummyClient
                 byte[] size = BitConverter.GetBytes(packet.size); 
                 byte[] packetId = BitConverter.GetBytes(packet.packetId);
                 byte[] playerId = BitConverter.GetBytes(packet.playerId);               
-                Array.Copy(size, 0, openSegement.Array, openSegement.Offset + count, 2);
+                Array.Copy(size, 0, open
+                
+                
+                
+                .Array, opensegment.Offset + count, 2);
                 count += 2;
-                Array.Copy(packetId, 0, openSegement.Array, openSegement.Offset + count, 2);
+                Array.Copy(packetId, 0, opensegment.Array, opensegment.Offset + count, 2);
                 count += 2;
-                Array.Copy(playerId, 0, openSegement.Array, openSegement.Offset + count, 8);
+                Array.Copy(playerId, 0, opensegment.Array, opensegment.Offset + count, 8);
                 count += 8;
                 */
                 ArraySegment<byte> s = packet.Write();

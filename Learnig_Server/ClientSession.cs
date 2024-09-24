@@ -18,11 +18,11 @@ namespace Learnig_Server
             //Packet packet = new Packet() { size = 100, packetId = 10 };
 
             // [100]  []  []  []  [10]  []  []  []
-            //ArraySegment<byte> openSegement = SendBufferHelper.Open(4096);
+            //ArraySegment<byte> opensegment = SendBufferHelper.Open(4096);
             //byte[] buffer = BitConverter.GetBytes(packet.size);
             //byte[] buffer2 = BitConverter.GetBytes(packet.packetId);
-            //Array.Copy(buffer, 0, openSegement.Array, openSegement.Offset, buffer.Length);
-            //Array.Copy(buffer2, 0, openSegement.Array, openSegement.Offset + buffer.Length, buffer2.Length);
+            //Array.Copy(buffer, 0, opensegment.Array, opensegment.Offset, buffer.Length);
+            //Array.Copy(buffer2, 0, opensegment.Array, opensegment.Offset + buffer.Length, buffer2.Length);
             //ArraySegment<byte> sendBuff = SendBufferHelper.Close(buffer.Length + buffer2.Length);
 
 
@@ -34,31 +34,7 @@ namespace Learnig_Server
 
         public override void OnRecvPacket(ArraySegment<byte> buffer)
         {
-            ushort count = 0;
-            ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
-            count += 2;
-            ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + count);
-            count += 2;
-
-            switch ((PacketID)id)
-            {
-                case PacketID.PlayerInfoReq:
-                    {
-                        PlayerInfoReq p = new PlayerInfoReq();
-                        p.Read(buffer);
-                        Console.WriteLine($"Player InfoReq : {p.playerId} {p.name}");
-
-                        foreach(PlayerInfoReq.Skill skill in p.skills)
-                        {
-                            Console.WriteLine($"Skill ({skill.id} {skill.level} {skill.duration})");
-                        }
-
-                    }
-                    break;
-
-            }
-
-            Console.WriteLine($"RecvPacket Id : {id}, Size : {size}");
+            PacketManager.Instance.OnRecvPacket(this, buffer);
         }
 
         public override void OnDisconnected(EndPoint endPoint)

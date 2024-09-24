@@ -15,7 +15,7 @@ public enum PacketID
 	
 }
 
-class PlayerInfoReq
+class PlayerInfoReq : IPacket
 {
     public byte testByte;
 	public long playerId;
@@ -113,18 +113,20 @@ class PlayerInfoReq
 	public List<Skill> skills = new List<Skill>();
 	
 
-    public void Read(ArraySegment<byte> segement)
+    public ushort Protocal { get { return (ushort)PacketID.PlayerInfoReq; } }
+
+    public void Read(ArraySegment<byte> segment)
     {
         ushort count = 0;
 
-        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segement.Array, segement.Offset, segement.Count);
+        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
             
         //ushort size = BitConverter.ToUInt16(s.Array, s.Offset); ?
         count += sizeof(ushort);
         //ushort id = BitConverter.ToUInt16(s.Array, s.Offset + count);
         count += sizeof(ushort);            
 
-        this.testByte = (byte)segement.Array[segement.Offset + count];
+        this.testByte = (byte)segment.Array[segment.Offset + count];
 		count += sizeof(byte);
 		
 		
@@ -153,18 +155,18 @@ class PlayerInfoReq
 
     public ArraySegment<byte> Write()
     {
-        ArraySegment<byte> segement = SendBufferHelper.Open(4096); //openSegement          
+        ArraySegment<byte> segment = SendBufferHelper.Open(4096); //opensegment          
         ushort count = 0;
         bool success = true;
 
-        Span<byte> s = new Span<byte>(segement.Array, segement.Offset, segement.Count);
+        Span<byte> s = new Span<byte>(segment.Array, segment.Offset, segment.Count);
 
-        //success &= BitConverter.TryWriteBytes(new Span<byte>(openSegement.Array, openSegement.Offset, openSegement.Count), packet.size);
+        //success &= BitConverter.TryWriteBytes(new Span<byte>(opensegment.Array, opensegment.Offset, opensegment.Count), packet.size);
         count += sizeof(ushort);
         success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), (ushort)PacketID.PlayerInfoReq);
         count += sizeof(ushort);
 
-        segement.Array[segement.Offset + count] = (byte)this.testByte;
+        segment.Array[segment.Offset + count] = (byte)this.testByte;
 		count += sizeof(byte);
 		
 		
@@ -172,7 +174,7 @@ class PlayerInfoReq
 		count += sizeof(long);
 		
 		
-		ushort nameLen = (ushort)Encoding.Unicode.GetBytes(this.name, 0, this.name.Length, segement.Array, segement.Offset + count + sizeof(ushort));
+		ushort nameLen = (ushort)Encoding.Unicode.GetBytes(this.name, 0, this.name.Length, segment.Array, segment.Offset + count + sizeof(ushort));
 		success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), nameLen);
 		count += sizeof(ushort);
 		count += nameLen;
@@ -191,15 +193,17 @@ class PlayerInfoReq
         return SendBufferHelper.Close(count);
     }
 }
-class Test
+class Test : IPacket
 {
     public int testInt;
 
-    public void Read(ArraySegment<byte> segement)
+    public ushort Protocal { get { return (ushort)PacketID.Test; } }
+
+    public void Read(ArraySegment<byte> segment)
     {
         ushort count = 0;
 
-        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segement.Array, segement.Offset, segement.Count);
+        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
             
         //ushort size = BitConverter.ToUInt16(s.Array, s.Offset); ?
         count += sizeof(ushort);
@@ -214,13 +218,13 @@ class Test
 
     public ArraySegment<byte> Write()
     {
-        ArraySegment<byte> segement = SendBufferHelper.Open(4096); //openSegement          
+        ArraySegment<byte> segment = SendBufferHelper.Open(4096); //opensegment          
         ushort count = 0;
         bool success = true;
 
-        Span<byte> s = new Span<byte>(segement.Array, segement.Offset, segement.Count);
+        Span<byte> s = new Span<byte>(segment.Array, segment.Offset, segment.Count);
 
-        //success &= BitConverter.TryWriteBytes(new Span<byte>(openSegement.Array, openSegement.Offset, openSegement.Count), packet.size);
+        //success &= BitConverter.TryWriteBytes(new Span<byte>(opensegment.Array, opensegment.Offset, opensegment.Count), packet.size);
         count += sizeof(ushort);
         success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), (ushort)PacketID.Test);
         count += sizeof(ushort);
@@ -236,5 +240,13 @@ class Test
 
         return SendBufferHelper.Close(count);
     }
+}
+
+
+interface IPacket
+{
+	ushort Protocal { get; }
+	void Read(ArraySegment<byte> segment);
+	ArraySegment<byte> Write();
 }
 

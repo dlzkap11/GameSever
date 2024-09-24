@@ -68,10 +68,9 @@ namespace Learning_Server
             //ThreadPool.SetMaxThreads(3, 3);
             //Parallel.Invoke(WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI);
 
+            PacketManager.Instance.Register();
+
             Listen();
-
-            
-
 
             //ThreadName.Dispose();
 
