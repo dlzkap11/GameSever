@@ -10,12 +10,19 @@ using System.Xml.Serialization;
 
 public enum PacketID
 {
-    PlayerInfoReq = 1,
-	Test = 2,
+    C_PlayerInfoReq = 1,
+	S_Test = 2,
 	
 }
 
-class PlayerInfoReq : IPacket
+interface IPacket
+{
+	ushort Protocal { get; }
+	void Read(ArraySegment<byte> segment);
+	ArraySegment<byte> Write();
+}
+
+class C_PlayerInfoReq : IPacket
 {
     public byte testByte;
 	public long playerId;
@@ -113,7 +120,7 @@ class PlayerInfoReq : IPacket
 	public List<Skill> skills = new List<Skill>();
 	
 
-    public ushort Protocal { get { return (ushort)PacketID.PlayerInfoReq; } }
+    public ushort Protocal { get { return (ushort)PacketID.C_PlayerInfoReq; } }
 
     public void Read(ArraySegment<byte> segment)
     {
@@ -163,7 +170,7 @@ class PlayerInfoReq : IPacket
 
         //success &= BitConverter.TryWriteBytes(new Span<byte>(opensegment.Array, opensegment.Offset, opensegment.Count), packet.size);
         count += sizeof(ushort);
-        success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), (ushort)PacketID.PlayerInfoReq);
+        success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), (ushort)PacketID.C_PlayerInfoReq);
         count += sizeof(ushort);
 
         segment.Array[segment.Offset + count] = (byte)this.testByte;
@@ -193,11 +200,11 @@ class PlayerInfoReq : IPacket
         return SendBufferHelper.Close(count);
     }
 }
-class Test : IPacket
+class S_Test : IPacket
 {
     public int testInt;
 
-    public ushort Protocal { get { return (ushort)PacketID.Test; } }
+    public ushort Protocal { get { return (ushort)PacketID.S_Test; } }
 
     public void Read(ArraySegment<byte> segment)
     {
@@ -226,7 +233,7 @@ class Test : IPacket
 
         //success &= BitConverter.TryWriteBytes(new Span<byte>(opensegment.Array, opensegment.Offset, opensegment.Count), packet.size);
         count += sizeof(ushort);
-        success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), (ushort)PacketID.Test);
+        success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), (ushort)PacketID.S_Test);
         count += sizeof(ushort);
 
         
@@ -240,13 +247,5 @@ class Test : IPacket
 
         return SendBufferHelper.Close(count);
     }
-}
-
-
-interface IPacket
-{
-	ushort Protocal { get; }
-	void Read(ArraySegment<byte> segment);
-	ArraySegment<byte> Write();
 }
 

@@ -11,6 +11,10 @@ namespace PacketGenerator
         static ushort packetId;
         static string packetEnum;
 
+        static string clientRegister;
+        static string severRegister;
+
+
         static void Main(string[] args)
         {
 
@@ -39,6 +43,10 @@ namespace PacketGenerator
 
                 string fileText = string.Format(PacketFormat.FileFormat, packetEnum, genPackets);
                 File.WriteAllText("GenPackets.cs", fileText);
+                string clientManagerText = string.Format(PacketFormat.managerFormat, clientRegister);
+                File.WriteAllText("ClientPacketManager.cs", clientManagerText);
+                string severManagerText = string.Format(PacketFormat.managerFormat, severRegister);
+                File.WriteAllText("SeverPacketManager.cs", severManagerText);
             }
 
         }
@@ -66,6 +74,11 @@ namespace PacketGenerator
             Tuple<string, string, string> t = ParseMembers(r);
             genPackets += string.Format(PacketFormat.packetFormat, packetName, t.Item1, t.Item2, t.Item3);
             packetEnum += string.Format(PacketFormat.packetEnumFormat, packetName, ++packetId) + Environment.NewLine + "\t";
+            
+            if(packetName.StartsWith("S_") || packetName.StartsWith("s_"))
+                clientRegister += string.Format(PacketFormat.managerRegisterFormat, packetName) + Environment.NewLine;
+            else
+                severRegister += string.Format(PacketFormat.managerRegisterFormat, packetName) + Environment.NewLine;
         }
 
         // {1} 멤버 변수들
