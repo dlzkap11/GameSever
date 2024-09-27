@@ -20,16 +20,20 @@ namespace DummyClient
 
 
             Connector connector = new Connector();
-            connector.Connect(endPoint, () => { return new ServerSession(); });
+            connector.Connect(endPoint, () => { return SessionManager.Instance.Generate(); }, 100);
 
             while (true)
             {
-                /*
+                
                 // 휴대폰 설정
-                Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                //Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
                 try
                 {
+
+                    SessionManager.Instance.SendForEach();
+
+                    /*
                     //문지기한테 입장 문의
                     socket.Connect(endPoint);
                     Console.WriteLine($"Connected To {socket.RemoteEndPoint.ToString()}");
@@ -44,6 +48,7 @@ namespace DummyClient
                     // 나간다
                     socket.Shutdown(SocketShutdown.Both);
                     socket.Close();
+                    */
                 }
 
 
@@ -51,11 +56,9 @@ namespace DummyClient
                 {
                     Console.WriteLine(e.ToString());
                 }
-                */
-            }
-            
-            Thread.Sleep(1000);
 
+                Thread.Sleep(250);
+            }        
         }
     }
 }

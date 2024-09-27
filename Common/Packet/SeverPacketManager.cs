@@ -5,16 +5,15 @@ using System.Collections.Generic;
 class PacketManager
 {
     #region Singleton
-    static PacketManager _instance;
-    public static PacketManager Instance
-    { get
-        {
-            if(_instance == null)
-                _instance = new PacketManager();
-            return _instance;
-        }
-    }
+    static PacketManager _instance = new PacketManager();
+    public static PacketManager Instance { get { return _instance; } }
     #endregion
+
+    PacketManager()
+    {
+        Register();
+    }
+
 
     Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>> _onRecv = new Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>>();
     Dictionary<ushort, Action<PacketSession, IPacket>> _handler = new Dictionary<ushort, Action<PacketSession, IPacket>>();
@@ -22,8 +21,8 @@ class PacketManager
     public void Register()
     {
       
-        _onRecv.Add((ushort) PacketID.C_PlayerInfoReq, MakePacket<C_PlayerInfoReq>);
-        _handler.Add((ushort) PacketID.C_PlayerInfoReq, PacketHandler.C_PlayerInfoReqHandler);
+        _onRecv.Add((ushort) PacketID.C_Chat, MakePacket<C_Chat>);
+        _handler.Add((ushort) PacketID.C_Chat, PacketHandler.C_ChatHandler);
 
        
     }
@@ -47,7 +46,7 @@ class PacketManager
         pkt.Read(buffer);
 
         Action<PacketSession, IPacket> action = null;
-        if (_handler.TryGetValue(pkt.Protocal, out action))
+        if (_handler.TryGetValue(pkt.Protocol, out action))
             action.Invoke(session, pkt);
     }
 }

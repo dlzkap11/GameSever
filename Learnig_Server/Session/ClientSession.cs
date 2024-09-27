@@ -1,4 +1,5 @@
-﻿using ServerCore;
+﻿using Learning_Server;
+using ServerCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +12,14 @@ namespace Learnig_Server
 {
     class ClientSession : PacketSession
     {
+        public int SesssionId { get; set; }
+        public GameRoom Room { get; set; }
+
         public override void OnConnected(EndPoint endPoint)
         {
             Console.WriteLine($"Onconnected : {endPoint}");
 
+            Program.Room.Enter(this);
             //Packet packet = new Packet() { size = 100, packetId = 10 };
 
             // [100]  []  []  []  [10]  []  []  []
@@ -25,11 +30,8 @@ namespace Learnig_Server
             //Array.Copy(buffer2, 0, opensegment.Array, opensegment.Offset + buffer.Length, buffer2.Length);
             //ArraySegment<byte> sendBuff = SendBufferHelper.Close(buffer.Length + buffer2.Length);
 
-
-
             //Send(sendBuff);
-            Thread.Sleep(5000);
-            Disconnect();
+
         }
 
         public override void OnRecvPacket(ArraySegment<byte> buffer)
@@ -39,6 +41,12 @@ namespace Learnig_Server
 
         public override void OnDisconnected(EndPoint endPoint)
         {
+            SessionManager.Instance.Remove(this);
+            if (Room != null) 
+            {
+                Room.Leave(this);
+                Room = null;
+            }
             Console.WriteLine($"OnDisconnected : {endPoint}");
         }
 
