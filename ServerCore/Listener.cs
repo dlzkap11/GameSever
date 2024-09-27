@@ -14,7 +14,7 @@ namespace ServerCore
         Func<Session> _sessionFactory;
 
 
-        public void Init(IPEndPoint endPoint, Func<Session> sessionFactory)
+        public void Init(IPEndPoint endPoint, Func<Session> sessionFactory, int register = 10, int backlog = 100)
         {
             //문지기
             _listenSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
@@ -25,9 +25,11 @@ namespace ServerCore
 
             // 영업시작
             // backlog : 최대 대기수
-            _listenSocket.Listen(1000);
+            _listenSocket.Listen(backlog);
 
-            for(int i = 0; i < 10; i++) //문을 여러개 생성
+
+
+            for(int i = 0; i < register; i++) //문을 여러개 생성
             {
                 SocketAsyncEventArgs args = new SocketAsyncEventArgs();
                 args.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted);

@@ -19,7 +19,9 @@ namespace Learnig_Server
         {
             Console.WriteLine($"Onconnected : {endPoint}");
 
-            Program.Room.Enter(this);
+            Program.Room.Push(() => Program.Room.Enter(this));
+            
+
             //Packet packet = new Packet() { size = 100, packetId = 10 };
 
             // [100]  []  []  []  [10]  []  []  []
@@ -44,7 +46,8 @@ namespace Learnig_Server
             SessionManager.Instance.Remove(this);
             if (Room != null) 
             {
-                Room.Leave(this);
+                GameRoom room = Room;
+                room.Push(()=> room.Leave(this));              
                 Room = null;
             }
             Console.WriteLine($"OnDisconnected : {endPoint}");
@@ -65,7 +68,7 @@ namespace Learnig_Server
 
         public override void OnSend(int numOfBytes)
         {
-            Console.WriteLine($"Transferred bytes: {numOfBytes}");
+            //Console.WriteLine($"Transferred bytes: {numOfBytes}");
         }
     }
 }
