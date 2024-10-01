@@ -62,7 +62,20 @@ namespace Learning_Server
             Console.WriteLine("Listening...");
 
 
-            while (true) {; }
+            int roomtick = 0;
+
+            while (true)
+            {
+                int now = System.Environment.TickCount;
+                if(roomtick < now)
+                {
+                    Room.Push(() => Room.Flush());
+                    roomtick = now + 250;
+                }
+                
+                //Thread.Sleep(250);
+            }
+            
 
             //ThreadName.Dispose();
 
