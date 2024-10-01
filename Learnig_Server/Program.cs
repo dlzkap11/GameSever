@@ -31,6 +31,11 @@ namespace Learning_Server
         static Listener _listener = new Listener();
         public static GameRoom Room = new GameRoom();
 
+        static void FlushRoom()
+        {
+            Room.Push(() => Room.Flush());
+            JobTimer.Instance.Push(FlushRoom, 250);
+        }
 
         //TLS (Thread Local Storage) 영역전개 굳이 락을 걸지않아도 각자의 영역이 있음 쓰레드 전역변수를 사용할 때 많이 사용가능
         static ThreadLocal<string> ThreadName = new ThreadLocal<string>(() => { return $"My Name is {Thread.CurrentThread.ManagedThreadId}"; });
@@ -62,17 +67,24 @@ namespace Learning_Server
             Console.WriteLine("Listening...");
 
 
-            int roomtick = 0;
+            //int roomtick = 0;
+            //FlushRoom();
+            JobTimer.Instance.Push(FlushRoom);
 
             while (true)
             {
+                /* 틱을 이용한 방법
                 int now = System.Environment.TickCount;
                 if(roomtick < now)
                 {
                     Room.Push(() => Room.Flush());
                     roomtick = now + 250;
                 }
-                
+                */
+
+                JobTimer.Instance.Flush();
+
+
                 //Thread.Sleep(250);
             }
             
