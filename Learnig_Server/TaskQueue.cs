@@ -27,7 +27,7 @@ namespace Learnig_Server
 
         public void Execute()
         {
-            _room.Broadcast(_session, _chat);
+            //_room.Broadcast(_session, _chat);
         }
     }
 

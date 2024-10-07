@@ -119,12 +119,12 @@ namespace PacketGenerator
                 string memberType = r.Name.ToLower();
                 switch(memberType)
                 {
-                    case "bool":
                     case "byte":
                         memberCode += string.Format(PacketFormat.memberFormat, memberType, memberName);
                         readCode += string.Format(PacketFormat.readByteFormat, memberName, memberType);
                         writeCode += string.Format(PacketFormat.writeByteFormat, memberName, memberType);
                         break;
+                    case "bool":
                     case "sbyte":
                     case "short":
                     case "ushort":
