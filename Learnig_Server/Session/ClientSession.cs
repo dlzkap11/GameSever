@@ -14,6 +14,10 @@ namespace Learnig_Server
     {
         public int SesssionId { get; set; }
         public GameRoom Room { get; set; }
+        public float PosX { get; set; }
+        public float PosY { get; set; }
+        public float PosZ { get; set; }
+
 
         public override void OnConnected(EndPoint endPoint)
         {
