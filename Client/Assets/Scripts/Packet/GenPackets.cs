@@ -15,7 +15,7 @@ public enum PacketID
 	
 }
 
-interface IPacket
+public interface IPacket
 {
 	ushort Protocol { get; }
 	void Read(ArraySegment<byte> segment);
@@ -34,7 +34,6 @@ class C_Chat : IPacket
 
         ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
             
-
         //ushort size = BitConverter.ToUInt16(s.Array, s.Offset); ?
         count += sizeof(ushort);
         //ushort id = BitConverter.ToUInt16(s.Array, s.Offset + count);
